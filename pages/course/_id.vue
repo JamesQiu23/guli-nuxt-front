@@ -117,14 +117,19 @@
                             </a>
                             <ol class="lh-menu-ol" style="display: block;">
                               <li v-for="video in chapter.children" :key="video.id" class="lh-menu-second ml30">
-                                <a href="#" title>
+                                <!-- <a href="#" title>
+                                  <span v-if="Number(course.price) !== 0 && video.free===true" class="fr">
+                                    <i class="free-icon vam mr10">免费试听</i>
+                                  </span>
+                                  <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{ video.title }}
+                                </a> -->
+                                <a :href="'/player/'+video.videoSourceId" :title="video.title" target="_blank">
                                   <span v-if="Number(course.price) !== 0 && video.free===true" class="fr">
                                     <i class="free-icon vam mr10">免费试听</i>
                                   </span>
                                   <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{ video.title }}
                                 </a>
-                              </li>
-                            </ol>
+                            </li></ol>
                           </li>
                         </ul>
                       </menu>

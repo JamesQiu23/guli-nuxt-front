@@ -156,11 +156,9 @@
 <script>
 import courseApi from '~/api/course'
 import querystring from 'querystring'
-
 export default {
   async asyncData(page) {
     const searchObj = {} // 组装查询参数
-
     // 从url地址栏中获取查询参数
     const query = page.route.query
     searchObj.subjectParentId = query.subjectParentId || ''
@@ -169,7 +167,6 @@ export default {
     searchObj.publishTimeSort = query.publishTimeSort || ''
     searchObj.priceSort = query.priceSort || ''
     searchObj.type = query.type || '' // 1：正序，2：倒序
-
     // 获取课程分类嵌套列表
     const subjectNestedListResponse = await courseApi.getSubjectNestedList()
     const subjectNestedList = subjectNestedListResponse.data.items
@@ -183,11 +180,9 @@ export default {
         subSubjectList = subjectNestedList[i].children
       }
     }
-
     // ///////// 课程列表/////////////////////////////////////////
     const courseListResponse = await courseApi.getList(searchObj) // 获取课程方法的返回对象
     const courseList = courseListResponse.data.courseList // 从返回对象中拿到课程列表
-
     return {
       courseList, // 将课程列表返回，这个课程列表数据会合并到vue对象的data中
       subjectNestedList, // 一级分类列表
@@ -206,7 +201,6 @@ export default {
     searchSubjectLevelTwo(subjectId) {
     // console.log(this.searchObj)
     // window.location = 'course?subjectId=' + subjectId + '&subjectParentId=' + this.searchObj.subjectParentId
-
     // 自动组装queryString
       const obj = {
         subjectParentId: this.searchObj.subjectParentId,
@@ -222,7 +216,6 @@ export default {
     // window.location = 'course?buyCountSort=1'
     //  + '&subjectId=' + this.searchObj.subjectId
     //  + '&subjectParentId=' + this.searchObj.subjectParentId
-
     // 自动组装queryString
       const obj = {
         subjectParentId: this.searchObj.subjectParentId,
@@ -232,7 +225,6 @@ export default {
       const querys = querystring.stringify(obj)
       window.location = '/course?' + querys
     },
-
     // 选择按创建时间倒序
     searchPublishTime() {
       // 自动组装queryString
@@ -244,7 +236,6 @@ export default {
       const querys = querystring.stringify(obj)
       window.location = '/course?' + querys
     },
-
     // 选择按价格倒序
     searchPrice(type) {
       // 自动组装queryString

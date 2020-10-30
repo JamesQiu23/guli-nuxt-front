@@ -55,8 +55,10 @@ import teacherApi from '~/api/teacher'
 
 export default{
   async asyncData() {
+    // 在页面加载前使用nuxt获取到讲师列表数据
     const response = await teacherApi.teacherList()
     return {
+      // 讲师列表数据
       items: response.data.items
     }
   }

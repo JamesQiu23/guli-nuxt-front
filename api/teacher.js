@@ -7,6 +7,7 @@ export default {
       method: 'get'
     })
   },
+
   getById(id) {
     return request({
       url: `/api/edu/teacher/get/${id}`,
