@@ -30,6 +30,14 @@ export default {
       url: `/api/vod/media/get-play-auth/${videoSourceId}`,
       method: 'get'
     })
+  },
+
+  getPageList(page, limit, searchObj) {
+    return request({
+      url: `/admin/edu/course/list/${page}/${limit}`,
+      method: 'get',
+      params: searchObj
+    })
   }
 
 }
