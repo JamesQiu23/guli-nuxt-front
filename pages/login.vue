@@ -10,7 +10,7 @@
       <form action="register">
         <div class="input-prepend restyle">
           <input
-            v-model="user.mobile"
+            v-model="user.phoneNum"
             type="text"
             placeholder="手机号">
           <i class="iconfont icon-phone"/>
@@ -46,13 +46,16 @@
 import '~/assets/css/sign.css'
 import '~/assets/css/iconfont.css'
 
+import cookie from 'js-cookie'
+import loginApi from '~/api/login'
+
 export default {
   layout: 'sign',
 
   data() {
     return {
       user: {
-        mobile: '',
+        phoneNum: '',
         password: ''
       }
     }
@@ -61,7 +64,13 @@ export default {
   methods: {
     // 登录
     submitLogin() {
-
+      loginApi.submitLogin(this.user).then(response => {
+        cookie.set('guli_token', response.data.token, {
+          domin: 'localhost',
+          expires: 1 // 1天：如果是数值则单位为天，也可以是Date类型，表示有效期至Date指定时间
+        })
+        window.location.href = '/' // 这是强行修改浏览器地址栏的url，"/"是首页
+      })
     }
   }
 }

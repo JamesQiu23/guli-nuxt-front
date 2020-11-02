@@ -27,7 +27,7 @@
         </ul>
         <!-- / nav -->
         <ul class="h-r-login">
-          <li id="no-login">
+          <li v-if="!userInfo" id="no-login">
             <a href="/login" title="登录">
               <em class="icon18 login-icon">&nbsp;</em>
               <span class="vam ml5">登录</span>
@@ -37,26 +37,23 @@
               <span class="vam ml5">注册</span>
             </a>
           </li>
-          <!-- 注意undis将当前节点隐藏了 -->
-          <li id="is-login-one" class="mr10 undis">
+          <li v-if="userInfo" id="is-login-one" class="mr10">
             <a id="headerMsgCountId" href="#" title="消息">
               <em class="icon18 news-icon">&nbsp;</em>
             </a>
             <q class="red-point">&nbsp;</q>
           </li>
-          <!-- 注意undis将当前节点隐藏了 -->
-          <li id="is-login-two" class="h-r-user undis">
+          <li v-if="userInfo" id="is-login-two" class="h-r-user">
             <a href="/ucenter" title>
               <img
-                src="~/assets/img/avatar-boy.gif"
+                :src="userInfo.avatar"
                 width="30"
                 height="30"
                 class="vam picImg"
-                alt
-              >
-              <span id="userName" class="vam disIb">登录的用户名</span>
+                alt>
+              <span id="userName" class="vam disIb">{{ userInfo.nickname }}</span>
             </a>
-            <a href="javascript:void(0)" title="退出" class="ml5">退出</a>
+            <a href="javascript:void(0);" title="退出" class="ml5" @click="logout()">退出</a>
           </li>
           <!-- /未登录显示第1 li；登录后显示第2，3 li -->
         </ul>
@@ -79,3 +76,51 @@
   </header>
   <!-- /公共头 -->
 </template>
+
+<script>
+import loginApi from '~/api/login'
+import cookie from 'js-cookie'
+export default {
+  data() {
+    return {
+      userInfo: null
+    }
+  },
+  created() {
+    this.getUserInfo()
+  },
+  methods: {
+    // 如果cookie中token都没有，则不显示也无法显示登录的账户信息
+    getUserInfo() {
+      if (!cookie.get('guli_token')) {
+        return
+      }
+      // 如果token存在但token还没发给后端解析用于发给我们数据，则不执行这里；
+      // 执行这里是当token存在且也向发送请求解析了，获取到了token中存储的个人信息时，执行这里直接显示用户信息；
+      if (cookie.get('guli_user')) {
+        this.userInfo = JSON.parse(cookie.get('guli_user'))
+        return
+      }
+      // 如果token存在且token没被后端解析过，则根据token解析用户登录信息
+      loginApi.getLoginInfo()
+        .then(response => {
+          this.userInfo = response.data.userInfo // 渲染页面
+          cookie.set('guli_user', this.userInfo, {
+            domin: 'localhost',
+            expires: 1 // 1天：如果是数值则单位为天，也可以是Date类型，表示有效期至Date指定时间
+          })
+        })
+    },
+    // 退出登录
+    logout() { // 将cookie的内容清空即为注销
+      cookie.remove('guli_token')
+      cookie.remove('guli_user')
+
+      // cookie.set('guli_token', '', { domain: 'localhost' })
+      // cookie.set('guli_user', '', { domain: 'localhost' })
+      // 跳转页面
+      window.location.href = '/'
+    }
+  }
+}
+</script>
