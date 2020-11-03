@@ -26,7 +26,6 @@ export default {
   // 获取加密视频的播放凭证
   getPlayAuth(videoSourceId) {
     return request({
-      baseURL: 'http://localhost:8025',
       url: `/api/vod/media/get-play-auth/${videoSourceId}`,
       method: 'get'
     })
