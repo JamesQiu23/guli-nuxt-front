@@ -40,11 +40,26 @@
 </template>
 
 <script>
+import orderApi from '~/api/order'
+
 export default {
   data() {
     return {
       order: {},
       agree: true
+    }
+  },
+
+  created() {
+    this.getById()
+  },
+
+  methods: {
+    getById() {
+      orderApi.getById(this.$route.params.id)
+        .then(response => {
+          this.order = response.data.item
+        })
     }
   }
 }

@@ -37,6 +37,11 @@ service.interceptors.response.use(
       cookie.set('guli_token', '', { domain: 'localhost' })
       cookie.set('guli_user', '', { domain: 'localhost' })
       return response.data // 不显示错误信息
+    } else if (res.code === 28004) { // 鉴权失败，则清空当前的token和用户信息，让用户重新登录获取新的token
+      cookie.set('guli_token', '', { domain: 'localhost' })
+      cookie.set('guli_user', '', { domain: 'localhost' })
+      window.location.href = '/login'
+      return
     } else {
       Message({
         message: res.message,

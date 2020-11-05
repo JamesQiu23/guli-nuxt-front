@@ -39,8 +39,11 @@
                 <a class="c-fff vam" title="收藏" href="#" >收藏</a>
               </span>
             </section>
-            <section class="c-attr-mt">
+            <section v-if="isBuy || course.price === 0" class="c-attr-mt">
               <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
+            </section>
+            <section v-else class="c-attr-mt">
+              <a href="#" title="立即购买" class="comm-btn c-btn-3" @click="createOrder()">立即购买</a>
             </section>
           </section>
         </aside>
@@ -117,17 +120,18 @@
                             </a>
                             <ol class="lh-menu-ol" style="display: block;">
                               <li v-for="video in chapter.children" :key="video.id" class="lh-menu-second ml30">
-                                <!-- <a href="#" title>
-                                  <span v-if="Number(course.price) !== 0 && video.free===true" class="fr">
-                                    <i class="free-icon vam mr10">免费试听</i>
-                                  </span>
+
+                                <a v-if="video.free === true" :href="'/player/'+video.videoSourceId" :title="video.title" target="_blank">
                                   <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{ video.title }}
-                                </a> -->
-                                <a :href="'/player/'+video.videoSourceId" :title="video.title" target="_blank">
-                                  <span v-if="Number(course.price) !== 0 && video.free===true" class="fr">
-                                    <i class="free-icon vam mr10">免费试听</i>
-                                  </span>
+                                  <i class="free-icon vam mr10">这集可免费试听</i>
+                                </a>
+                                <a v-else-if="isBuy||course.price === 0" :href="'/player/'+video.videoSourceId" :title="video.title" target="_blank">
                                   <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{ video.title }}
+                                  <i class="free-icon vam mr10">已购买，可立即观看</i>
+                                </a>
+                                <a v-else :title="video.title" target="_blank">
+                                  <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{ video.title }}
+                                  <i class="free-icon vam mr10">请先购买</i>
                                 </a>
                             </li></ol>
                           </li>
@@ -176,12 +180,40 @@
 </template>
 <script>
 import courseApi from '~/api/course'
+import orderApi from '~/api/order'
+import cookie from 'js-cookie'
+
 export default {
+  data() {
+    return {
+      isBuy: false
+    }
+  },
+
   async asyncData(page) {
     const response = await courseApi.getById(page.route.params.id)
     return {
       course: response.data.course,
       chapterList: response.data.chapterVoList
+    }
+  },
+
+  created() {
+    // 只要用户登录过，就会在cookie中存储token和根据token从后端解析的用户部分信息
+    if (cookie.get('guli_user')) {
+      orderApi.isBuy(this.$route.params.id)
+        .then(response => {
+          this.isBuy = response.data.isBuy
+        })
+    }
+  },
+
+  methods: {
+    // 点击"立即购买"后立即创建订单，并跳转到订单详情页
+    createOrder() {
+      orderApi.createOrder(this.$route.params.id).then(response => {
+        this.$router.push('/order/' + response.data.orderId)
+      })
     }
   }
 }
