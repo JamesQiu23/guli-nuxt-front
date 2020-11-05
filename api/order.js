@@ -21,5 +21,20 @@ export default {
       url: `/api/trade/order/auth/is-buy/${courseId}`,
       method: 'get'
     })
+  },
+
+  getList() {
+    return request({
+      url: '/api/trade/order/auth/list',
+      method: 'get'
+    })
+  },
+
+  removeById(courseId) {
+    return request({
+      url: `/api/trade/order/auth/remove/${courseId}`,
+      method: 'delete'
+    })
   }
+
 }

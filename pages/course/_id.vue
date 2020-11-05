@@ -34,9 +34,13 @@
               <span class="c-fff fsize14">主讲： {{ course.teacherName }}&nbsp;&nbsp;&nbsp;</span>
             </section>
             <section class="c-attr-mt of">
-              <span class="ml10 vam">
+              <span v-if="isCollect" class="ml10 vam sc-end">
                 <em class="icon18 scIcon"/>
-                <a class="c-fff vam" title="收藏" href="#" >收藏</a>
+                <a style="cursor:pointer" class="c-fff vam" title="取消收藏" @click="removeCollect(course.id)">已收藏</a>
+              </span>
+              <span v-else class="ml10 vam">
+                <em class="icon18 scIcon"/>
+                <span style="cursor:pointer" class="c-fff vam" title="收藏" @click="addCollect(course.id)" >收藏</span>
               </span>
             </section>
             <section v-if="isBuy || course.price === 0" class="c-attr-mt">
@@ -182,10 +186,12 @@
 import courseApi from '~/api/course'
 import orderApi from '~/api/order'
 import cookie from 'js-cookie'
+import collectApi from '~/api/collect'
 
 export default {
   data() {
     return {
+      isCollect: false,
       isBuy: false
     }
   },
@@ -205,6 +211,10 @@ export default {
         .then(response => {
           this.isBuy = response.data.isBuy
         })
+      collectApi.isCollect(this.course.id)
+        .then(response => {
+          this.isCollect = response.data.isCollect
+        })
     }
   },
 
@@ -214,6 +224,22 @@ export default {
       orderApi.createOrder(this.$route.params.id).then(response => {
         this.$router.push('/order/' + response.data.orderId)
       })
+    },
+
+    addCollect(courseId) {
+      collectApi.addCollect(courseId)
+        .then(response => {
+          this.isCollect = true
+          this.$message.success(response.message)
+        })
+    },
+
+    removeCollect(courseId) {
+      collectApi.removeById(courseId)
+        .then(response => {
+          this.isCollect = false
+          this.$message.success(response.message)
+        })
     }
   }
 }
