@@ -78,7 +78,7 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     this.fetchOrderList()
   },
 
@@ -87,6 +87,9 @@ export default {
       orderApi.getList()
         .then(response => {
           this.orderList = response.data.items
+          // this.$message({ type: 'success', message: response.message })
+          // this.$router.go(0)
+          // this.$forceUpdate()
         })
     },
 
@@ -117,10 +120,11 @@ export default {
         type: 'warning'
       })
         .then(() => { orderApi.removeById(orderId) }).then((response) => {
-          this.fetchOrderList()
-          this.$router.go(0)
-          // this.$forceUpdate
-          this.$message({ type: 'success', message: response.message })
+          this.$message('删除成功')
+          orderApi.getList().then(response => {
+            this.orderList = response.data.items
+            this.$forceUpdate()
+          })
         })
         .catch(error => {
           if (error === 'cancel') {

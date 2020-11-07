@@ -42,6 +42,8 @@ service.interceptors.response.use(
       cookie.set('guli_user', '', { domain: 'localhost' })
       window.location.href = '/login'
       return
+    } else if (res.code === 25000) { // 支付中
+      return response.data // 不显示错误信息
     } else {
       Message({
         message: res.message,

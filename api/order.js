@@ -35,6 +35,13 @@ export default {
       url: `/api/trade/order/auth/remove/${courseId}`,
       method: 'delete'
     })
+  },
+
+  queryPayStatus(orderNo) {
+    return request({
+      url: `/api/trade/order/query-pay-status/${orderNo}`,
+      method: 'get'
+    })
   }
 
 }
